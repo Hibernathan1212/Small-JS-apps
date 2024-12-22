@@ -1,11 +1,24 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Website mockup maker</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Website Mockup Generator</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
   </head>
-  <body>
-    <h1>Website Mockup Generator</h1>
-    <input type="text" id="websiteAddress" placeholder="Enter the website">
 
+  <body>
+    <div class="cont">
+      <h1>Website Mockup Generator</h1>
+      <input type="text" id="websiteAddress" placeholder="Enter the website">
+      <div class="color_cont">
+        <div id="color_demo"></div>
+        <input type="text" id="bgColor" value="b6b308">
+      </div>
+      <button type="submit" id="submitBtn" onclick="generateMockup();">Create Mockup</button><br>
+      <button id="Download">Download</button>
+      <img id="resultImg">
+    </div>
+    <script src="script.js"></script>
   </body>
 </html>
