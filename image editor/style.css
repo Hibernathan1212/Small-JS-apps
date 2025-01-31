@@ -1,0 +1,9 @@
+img {
+    width: 25em;
+    position: relative;
+    padding-bottom: 1em;
+}
+  
+#section_three {
+    border: 2px solid black; 
+}

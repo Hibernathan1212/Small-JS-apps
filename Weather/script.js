@@ -30,7 +30,7 @@ async function getData() { // Retrieve the values of city, start date, and end d
 
     let data = await promise.json(); // Convert the response to JSON format. 
     if (!data.data) { // If no data then return the function.
-        alert('No data available for the city.');
+        alert('No data available for the location.');
         return; 
     } 
     const stationID = data.data[0].id; // Pick the ID of the first weather station. 

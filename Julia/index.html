@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Julia Fractals</title>
+    </head>
+
+    <style>
+        body {
+        background: black;
+        color: white;
+        }
+        canvas {
+        border: 1px solid white;
+        }
+    </style>
+
+    <body>
+        <h2></h2>
+        <canvas></canvas>
+    </body>
+
+    <!-- Import math.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/5.6.0/math.min.js"></script>
+
+    <script>
+        // The HTML elements we are using
+        var header = document.querySelector('h2')
+        var canvas = document.querySelector('canvas')
+        var ctx = canvas.getContext('2d')
+
+        // The size of our canvas
+        var width = 100
+        var height = 100
+
+        // Set the size of our canvas
+        canvas.width = width
+        canvas.height = height
+
+        var mouseX = 0
+        var mouseY = 0
+
+        var constant = math.complex(0.28, 0.01)
+
+        var maxIterations = 64
+
+        var clicked = false
+
+        var pan = math.complex(0, 0)
+        var zoom = 1
+
+        function julia(z, i = 0) {
+            z = z.mul(z)
+            z = z.add(constant)
+
+            if (math.abs(z) > 2 || i >= maxIterations) {
+                return i
+            } else {
+                return julia(z, i + 1)
+            }
+        }
+
+        function pointToColor(point) {
+            var iterations = julia(point)
+
+            // What percentage of our limit is that?
+            var percentage = iterations / maxIterations
+
+            var red = percentage * 255
+            var green = percentage * 255
+            var blue = percentage * 255
+
+            // Create a color from that percentage
+            return `rgb(${red}, ${green}, ${blue})`
+        }
+
+        function pixelToPoint(x, y) {
+            // Map percentage of total width/height to a value from -1 to +1
+            var zx = (x / width) * 2 - 1
+            var zy = 1 - (y / height) * 2
+
+            // Create a complex number based on our new XY values
+            var z = math.complex(zx, zy)
+
+            // Zoom the camera
+            z = z.div(zoom)
+
+            // Pan the camera
+            z = z.add(pan)
+
+            return z
+        }
+
+        function drawPixel(x, y, color) {
+            ctx.fillStyle = color
+            ctx.fillRect(x, y, 1, 1)
+        }
+
+        function draw() {
+            for (var y = 0; y < height; y++) {
+                // Loop over every row of pixels
+                for (var x = 0; x < width; x++) {
+                // Turn this pixel into a point in the complex plane
+                var point = pixelToPoint(x, y)
+
+                // Turn that point into a color
+                var color = pointToColor(point)
+
+                // Draw over this pixel with that color
+                drawPixel(x, y, color)
+                }
+            }
+        }
+
+        function update() {
+            header.innerHTML = constant.toString() + ' at ' + zoom + 'X'
+            draw()
+        }
+
+        function click(event) {
+            // Ignore the first click
+            if (!clicked) {
+                clicked = true
+                return
+            }
+
+            mouseX = event.clientX - canvas.offsetLeft
+            mouseY = event.clientY - canvas.offsetTop
+
+            pan = pixelToPoint(mouseX, mouseY)
+            zoom *= 2
+
+            update()
+        }
+
+        function move(event) {
+            if (clicked) {
+                return
+            }
+            // Get the mouse's XY coordinates on canvas
+            mouseX = event.clientX - canvas.offsetLeft
+            mouseY = event.clientY - canvas.offsetTop
+
+            // Turn mouse coordinates into a point on the complex plane
+            constant = pixelToPoint(mouseX, mouseY)
+
+            // Round that point off to the nearest 0.01
+            constant.re = math.round(constant.re * 100) / 100
+            constant.im = math.round(constant.im * 100) / 100
+
+            // Update everything!
+            update()
+        }
+
+        canvas.addEventListener('pointermove', move)
+        canvas.addEventListener('click', click)
+
+        update()
+    </script>
+</html>
